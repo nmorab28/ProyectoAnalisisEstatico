@@ -1,0 +1,33 @@
+# Maven
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+release.properties
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+out/
+
+# Logs
+*.log
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# SonarCloud
+.sonar/
+
+# PMD reports
+pmd.xml
+pmd-report.html
+
+# Java
+*.class
+
+# Environment files
+src/main/resources/ISUCI.properties
+.env
