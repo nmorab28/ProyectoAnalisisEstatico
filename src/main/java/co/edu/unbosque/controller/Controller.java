@@ -176,7 +176,7 @@ public class Controller implements ActionListener {
 			VentanaUsuariosPdf vup = vp.getVentanaPdf();
 			PanelTabla pt = vup.getPanelTabla();
 			JTable tabla = pt.getTablaUsuarios();
-			generarPDF(tabla);
+            generarPDFConMensajes(tabla);
 			break;
 		case "BTN_SALIR":
 			vp.cerrarVentanaPdf();
@@ -264,17 +264,24 @@ public class Controller implements ActionListener {
 
     private void generarPDF(JTable tabla) {
         int filaSeleccionada = tabla.getSelectedRow();
-        TableModel modelo = tabla.getModel(); // Extraer el modelo de la tabla
-        Ciclista ciclistaSeleccionado = obtenerCiclistaSeleccionado(filaSeleccionada, modelo); // Usar el modelo
+        TableModel modelo = tabla.getModel();
+        Ciclista ciclistaSeleccionado = obtenerCiclistaSeleccionado(filaSeleccionada, modelo);
 
         try {
             generarPDF(ciclistaSeleccionado);
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public void generarPDFConMensajes(JTable tabla) {
+        try {
+            generarPDF(tabla);
             JOptionPane.showMessageDialog(vp, "PDF de ciclista generado correctamente.", "Información",
                     JOptionPane.INFORMATION_MESSAGE);
-        } catch (IOException ex) {
+        } catch (Exception e) {
             JOptionPane.showMessageDialog(vp, "Error al generar el PDF de ciclista.", "Error",
                     JOptionPane.ERROR_MESSAGE);
-            ex.printStackTrace();
         }
     }
 
