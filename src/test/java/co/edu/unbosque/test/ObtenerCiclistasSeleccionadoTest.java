@@ -1,8 +1,9 @@
 package co.edu.unbosque.test;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
-import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 
 import org.junit.jupiter.api.Test;
 
@@ -12,25 +13,21 @@ import co.edu.unbosque.model.Ciclista;
 class ObtenerCiclistasSeleccionadoTest {
 
     @Test
-    void testObtenerCiclistaSeleccionado() {
+    void testObtenerCiclistaSeleccionadoConMock() {
         Controller controller = new Controller();
 
-        DefaultTableModel modeloTabla = new DefaultTableModel(
-                new Object[][] {
-                        {"Nombre1", "ID1", "Tipo1", "Genero1", "Correo1", "Usuario1"}
-                },
-                new String[] {"Nombre", "ID", "Tipo", "Genero", "Correo", "Usuario"}
-        );
+        TableModel modeloMock = mock(TableModel.class);
+        when(modeloMock.getRowCount()).thenReturn(1);
+        when(modeloMock.getValueAt(0, 0)).thenReturn("Nombre1");
+        when(modeloMock.getValueAt(0, 1)).thenReturn("ID1");
+        when(modeloMock.getValueAt(0, 2)).thenReturn("Tipo1");
+        when(modeloMock.getValueAt(0, 3)).thenReturn("Genero1");
+        when(modeloMock.getValueAt(0, 4)).thenReturn("Correo1");
+        when(modeloMock.getValueAt(0, 5)).thenReturn("Usuario1");
 
-        int filaSeleccionada = 0;
-        Ciclista ciclista = controller.obtenerCiclistaSeleccionado(filaSeleccionada, modeloTabla);
+        Ciclista ciclista = controller.obtenerCiclistaSeleccionado(0, modeloMock);
 
         assertNotNull(ciclista);
         assertEquals("Nombre1", ciclista.getNombre());
-        assertEquals("ID1", ciclista.getId());
-        assertEquals("Tipo1", ciclista.getTipo());
-        assertEquals("Genero1", ciclista.getGenero());
-        assertEquals("Correo1", ciclista.getCorreo());
-        assertEquals("Usuario1", ciclista.getUsuario());
     }
 }

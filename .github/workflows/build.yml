@@ -1,4 +1,5 @@
 name: SonarQube
+
 on:
   push:
     branches:
@@ -10,10 +11,11 @@ jobs:
   build:
     name: Build and analyze
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+          fetch-depth: 0  # Shallow clones should be disabled for better relevancy of analysis
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -48,13 +50,12 @@ jobs:
 
       # Crear archivo Ciclistas.dat para pruebas
       - name: Crear archivo Ciclistas.dat para pruebas
-        run: |
-          echo "" > Ciclistas.dat
+        run: echo "" > Ciclistas.dat
 
       # Ejecutar pruebas y análisis SonarCloud en modo headless
-      - name: Build and analyze
+      - name: Build, Test and Analyze with SonarCloud
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+        run: mvn clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
           -Dsonar.projectKey=nmorab28_ProyectoAnalisisEstatico \
           -Djava.awt.headless=true
