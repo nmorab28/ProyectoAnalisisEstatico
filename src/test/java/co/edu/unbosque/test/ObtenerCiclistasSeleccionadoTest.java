@@ -2,29 +2,35 @@ package co.edu.unbosque.test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 import org.junit.jupiter.api.Test;
 
 import co.edu.unbosque.controller.Controller;
+import co.edu.unbosque.model.Ciclista;
 
 class ObtenerCiclistasSeleccionadoTest {
 
-	@Test
-	void testObtenerCiclistaSeleccionado() {
+    @Test
+    void testObtenerCiclistaSeleccionado() {
         Controller controller = new Controller();
-        JTable tabla = new JTable(); // Tabla de prueba
-        // Crear el modelo de datos para la tabla
+
         DefaultTableModel modeloTabla = new DefaultTableModel(
-            new Object[][] {
-                {"Nombre1", "ID1", "Tipo1", "Genero1", "Correo1", "Usuario1", "Experiencia1"}
-            },
-            new String[] {"Nombre", "ID", "Tipo", "Genero", "Correo", "Usuario", "Experiencia"}
+                new Object[][] {
+                        {"Nombre1", "ID1", "Tipo1", "Genero1", "Correo1", "Usuario1"}
+                },
+                new String[] {"Nombre", "ID", "Tipo", "Genero", "Correo", "Usuario"}
         );
-        tabla.setModel(modeloTabla); // Establecer el modelo de datos en la tabla
-        // Indicar la fila seleccionada para la prueba
-        int filaSeleccionada = 0; // Fila seleccionada para la prueba
-        assertNotNull(controller.obtenerCiclistaSeleccionado(filaSeleccionada, tabla));
+
+        int filaSeleccionada = 0;
+        Ciclista ciclista = controller.obtenerCiclistaSeleccionado(filaSeleccionada, modeloTabla);
+
+        assertNotNull(ciclista);
+        assertEquals("Nombre1", ciclista.getNombre());
+        assertEquals("ID1", ciclista.getId());
+        assertEquals("Tipo1", ciclista.getTipo());
+        assertEquals("Genero1", ciclista.getGenero());
+        assertEquals("Correo1", ciclista.getCorreo());
+        assertEquals("Usuario1", ciclista.getUsuario());
     }
 }

@@ -18,6 +18,9 @@ import javax.mail.internet.MimeMessage;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+
+import co.edu.unbosque.util.CiclistaExtractor;
 import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
@@ -259,56 +262,53 @@ public class Controller implements ActionListener {
 		return escuadras;
 	}
 
-	private void generarPDF(JTable tabla) {
-		// Obtener el índice de la fila seleccionada en la tabla
-		int filaSeleccionada = tabla.getSelectedRow();
-		// Obtener el ciclista seleccionado usando el índice de la fila
-		Ciclista ciclistaSeleccionado = obtenerCiclistaSeleccionado(filaSeleccionada, tabla);
-		// Generar el PDF con la información del ciclista seleccionado
-		try {
-			generarPDF(ciclistaSeleccionado);
-			JOptionPane.showMessageDialog(vp, "PDF de ciclista generado correctamente.", "Información",
-					JOptionPane.INFORMATION_MESSAGE);
-		} catch (IOException ex) {
-			JOptionPane.showMessageDialog(vp, "Error al generar el PDF de ciclista.", "Error",
-					JOptionPane.ERROR_MESSAGE);
-			ex.printStackTrace();
-		}
-	}
+    private void generarPDF(JTable tabla) {
+        int filaSeleccionada = tabla.getSelectedRow();
+        TableModel modelo = tabla.getModel(); // Extraer el modelo de la tabla
+        Ciclista ciclistaSeleccionado = obtenerCiclistaSeleccionado(filaSeleccionada, modelo); // Usar el modelo
 
-	public void generarPDF(Ciclista ciclistaSeleccionado) throws IOException {
-		Document documento = new Document();
-		try {
-			FileOutputStream archivoPDF = new FileOutputStream("InformeCiclista.pdf");
-			com.itextpdf.text.pdf.PdfWriter.getInstance(documento, archivoPDF);
-			documento.open();
+        try {
+            generarPDF(ciclistaSeleccionado);
+            JOptionPane.showMessageDialog(vp, "PDF de ciclista generado correctamente.", "Información",
+                    JOptionPane.INFORMATION_MESSAGE);
+        } catch (IOException ex) {
+            JOptionPane.showMessageDialog(vp, "Error al generar el PDF de ciclista.", "Error",
+                    JOptionPane.ERROR_MESSAGE);
+            ex.printStackTrace();
+        }
+    }
 
-			// Agregar título al documento
-			Font fontTitulo = new Font(Font.FontFamily.HELVETICA, 18, Font.BOLD);
-			Paragraph titulo = new Paragraph("Información del Ciclista", fontTitulo);
-			titulo.setAlignment(Element.ALIGN_CENTER);
-			documento.add(titulo);
-			documento.add(Chunk.NEWLINE); // Agregar una línea en blanco
+    public void generarPDF(Ciclista ciclistaSeleccionado) throws IOException {
+        Document documento = new Document();
+        try (FileOutputStream archivoPDF = new FileOutputStream("InformeCiclista.pdf")) {
+            com.itextpdf.text.pdf.PdfWriter.getInstance(documento, archivoPDF);
+            documento.open();
 
-			// Agregar información del ciclista seleccionado al documento
-			Paragraph parrafo = new Paragraph();
-			parrafo.add("Nombre: " + ciclistaSeleccionado.getNombre() + "\n");
-			parrafo.add("ID: " + ciclistaSeleccionado.getId() + "\n");
-			parrafo.add("Tipo: " + ciclistaSeleccionado.getTipo() + "\n");
-			parrafo.add("Género: " + ciclistaSeleccionado.getGenero() + "\n");
-			parrafo.add("Correo: " + ciclistaSeleccionado.getCorreo() + "\n");
-			parrafo.add("Usuario: " + ciclistaSeleccionado.getUsuario() + "\n");
-			parrafo.add("Cadencia de Pedaleo: " + ciclistaSeleccionado.getCadenciaPedaleo() + "\n");
-			parrafo.add("Tiempo Acumulado en Carrera: " + ciclistaSeleccionado.getTiempoAC() + "\n");
-			parrafo.add(Chunk.NEWLINE);
-			documento.add(parrafo);
+            // Título
+            Font fontTitulo = new Font(Font.FontFamily.HELVETICA, 18, Font.BOLD);
+            Paragraph titulo = new Paragraph("Información del Ciclista", fontTitulo);
+            titulo.setAlignment(Element.ALIGN_CENTER);
+            documento.add(titulo);
+            documento.add(Chunk.NEWLINE);
 
-			// Cerrar el documento
-			documento.close();
-		} catch (DocumentException e) {
-			e.printStackTrace();
-		}
-	}
+            // Contenido
+            Paragraph parrafo = new Paragraph();
+            parrafo.add("Nombre: " + ciclistaSeleccionado.getNombre() + "\n");
+            parrafo.add("ID: " + ciclistaSeleccionado.getId() + "\n");
+            parrafo.add("Tipo: " + ciclistaSeleccionado.getTipo() + "\n");
+            parrafo.add("Género: " + ciclistaSeleccionado.getGenero() + "\n");
+            parrafo.add("Correo: " + ciclistaSeleccionado.getCorreo() + "\n");
+            parrafo.add("Usuario: " + ciclistaSeleccionado.getUsuario() + "\n");
+            parrafo.add("Cadencia de Pedaleo: " + ciclistaSeleccionado.getCadenciaPedaleo() + "\n");
+            parrafo.add("Tiempo Acumulado en Carrera: " + ciclistaSeleccionado.getTiempoAC() + "\n");
+            parrafo.add(Chunk.NEWLINE);
+            documento.add(parrafo);
+
+            documento.close();
+        } catch (DocumentException e) {
+            throw new IOException("Error al generar el PDF", e);
+        }
+    }
 
 	// metodos necesarios para enviar el correo electronico
 	public boolean validarEmail(String email) {
@@ -356,29 +356,12 @@ public class Controller implements ActionListener {
         }
     }
 
-	public Ciclista obtenerCiclistaSeleccionado(int filaSeleccionada, JTable tabla) {
-		// Verificar si la fila seleccionada es válida
-		if (filaSeleccionada < 0 || filaSeleccionada >= tabla.getRowCount()) {
-			return null; // Retorna null si la fila seleccionada no es válida
-		}
 
-		// Obtener la información del ciclista de la fila seleccionada
-		String nombre = (String) tabla.getValueAt(filaSeleccionada, 0);
-		String id = (String) tabla.getValueAt(filaSeleccionada, 1);
-		String tipo = (String) tabla.getValueAt(filaSeleccionada, 2);
-		String genero = (String) tabla.getValueAt(filaSeleccionada, 3);
-		String correo = (String) tabla.getValueAt(filaSeleccionada, 4);
-		String usuario = (String) tabla.getValueAt(filaSeleccionada, 5);
+    public Ciclista obtenerCiclistaSeleccionado(int filaSeleccionada, TableModel modelo) {
+        return CiclistaExtractor.desdeModelo(filaSeleccionada, modelo);
+    }
 
-		// Crear un objeto de tipo Ciclista con la información obtenida
-		Ciclista ciclista = new Ciclista(nombre, id, genero, correo, usuario, "", tipo, 0, 0);
-		// Asegúrate de proporcionar un valor predeterminado para las variables que no
-		// tienes en este contexto
-
-		return ciclista; // Retorna el objeto de tipo Ciclista
-	}
-
-	private void eliminarUsuario() {
+    private void eliminarUsuario() {
 		VentanaUsuariosPdf vup = vp.getVentanaPdf();
 		PanelTabla pt = vup.getPanelTabla();
 		DefaultTableModel datos = pt.getTableModel();
