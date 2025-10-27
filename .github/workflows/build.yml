@@ -54,6 +54,9 @@ jobs:
       - name: Build, Test and Analyze
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn clean verify sonar:sonar \
+        run: mvn -B clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
           -Djava.awt.headless=true \
+          -Dsonar.projectKey=nmorab28_ProyectoAnalisisEstatico \
+          -Dsonar.organization=nmorab28 \
+          -Dsonar.host.url=https://sonarcloud.io \
           -Dsonar.login=${{ secrets.SONAR_TOKEN }}
