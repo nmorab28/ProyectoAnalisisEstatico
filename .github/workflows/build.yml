@@ -1,4 +1,4 @@
-name: SonarQube
+name: CI - Build, Test & SonarCloud
 
 on:
   push:
@@ -9,13 +9,12 @@ on:
 
 jobs:
   build:
-    name: Build and analyze
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Shallow clones should be disabled for better relevancy of analysis
+          fetch-depth: 0  # Necesario para análisis correcto en SonarCloud
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -23,7 +22,7 @@ jobs:
           java-version: 17
           distribution: 'zulu'
 
-      - name: Cache SonarQube packages
+      - name: Cache SonarCloud packages
         uses: actions/cache@v4
         with:
           path: ~/.sonar/cache
@@ -37,8 +36,8 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
 
-      # Crear archivo ISUCI.properties para pruebas
-      - name: Crear archivo ISUCI.properties para pruebas
+      # Crear archivos necesarios para pruebas
+      - name: Crear archivo ISUCI.properties
         run: |
           echo "usuario=test" > src/main/resources/ISUCI.properties
           echo "clave=test123" >> src/main/resources/ISUCI.properties
@@ -48,14 +47,13 @@ jobs:
           echo "mailgun.username=test@example.com" >> src/main/resources/ISUCI.properties
           echo "mailgun.password=testpassword" >> src/main/resources/ISUCI.properties
 
-      # Crear archivo Ciclistas.dat para pruebas
-      - name: Crear archivo Ciclistas.dat para pruebas
+      - name: Crear archivo Ciclistas.dat
         run: echo "" > Ciclistas.dat
 
-      # Ejecutar pruebas y análisis SonarCloud en modo headless
-      - name: Build, Test and Analyze with SonarCloud
+      # Ejecutar pruebas y análisis SonarCloud
+      - name: Build, Test and Analyze
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
-          -Dsonar.projectKey=nmorab28_ProyectoAnalisisEstatico \
-          -Djava.awt.headless=true
+        run: mvn clean verify sonar:sonar \
+          -Djava.awt.headless=true \
+          -Dsonar.login=${{ secrets.SONAR_TOKEN }}
