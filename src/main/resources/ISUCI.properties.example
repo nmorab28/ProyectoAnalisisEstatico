@@ -1,0 +1,8 @@
+usuario=test
+clave=test123
+host=smtp.test.com
+
+mailgun.host=smtp.mailgun.org
+mailgun.port=587
+mailgun.username=test@example.com
+mailgun.password=testpassword

@@ -70,6 +70,11 @@ public class Controller implements ActionListener {
 		admin = new AdminIsuci();
 	}
 
+    public Controller(VentanaPrincipal ventanaMock) {
+        this.vp = ventanaMock;
+        this.admin = new AdminIsuci();
+    }
+
 	public void init() {
 
 	}

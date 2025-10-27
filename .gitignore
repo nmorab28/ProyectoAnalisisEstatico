@@ -31,3 +31,7 @@ pmd-report.html
 # Environment files
 src/main/resources/ISUCI.properties
 .env
+
+# Buissiness files
+Ciclistas.dat
+InformeCiclista.pdf
