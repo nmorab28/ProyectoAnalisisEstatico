@@ -12,19 +12,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Checkout del código
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Necesario para análisis correcto en SonarCloud
+          fetch-depth: 0
 
-      # 2. Configurar JDK 17
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: 17
           distribution: 'zulu'
 
-      # 3. Cache SonarCloud
       - name: Cache SonarCloud packages
         uses: actions/cache@v4
         with:
@@ -32,7 +29,6 @@ jobs:
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
 
-      # 4. Cache Maven
       - name: Cache Maven packages
         uses: actions/cache@v4
         with:
@@ -40,7 +36,6 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
 
-      # 5. Crear archivos necesarios para pruebas
       - name: Crear archivo ISUCI.properties
         run: |
           echo "usuario=test" > src/main/resources/ISUCI.properties
@@ -54,13 +49,7 @@ jobs:
       - name: Crear archivo Ciclistas.dat
         run: echo "" > Ciclistas.dat
 
-      # 6. Compilar, ejecutar pruebas y análisis SonarCloud
       - name: Build, Test and Analyze
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn -B clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
-          -Djava.awt.headless=true \
-          -Dsonar.projectKey=nmorab28_ProyectoAnalisisEstatico \
-          -Dsonar.organization=nmorab28 \
-          -Dsonar.host.url=https://sonarcloud.io \
-          -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+        run: mvn -B clean verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Djava.awt.headless=true -Dsonar.projectKey=nmorab28_ProyectoAnalisisEstatico -Dsonar.organization=nmorab28 -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=${{ secrets.SONAR_TOKEN }}
